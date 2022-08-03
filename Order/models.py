@@ -1,7 +1,6 @@
 from cgi import print_exception
-from tkinter import CASCADE
 from django.db import models
-from django.contrib.auth import User
+from django.contrib.auth.models import User
 
 
 class Order(models.Model):
@@ -44,3 +43,8 @@ class OrderItem(models.Model):
 
     def __str__(self):
         return f" Order's item n. {self.order}"
+
+    class Meta:
+        "Verbose names"
+        verbose_name = "Order's item "
+        verbose_name_plural = "Order's items "
