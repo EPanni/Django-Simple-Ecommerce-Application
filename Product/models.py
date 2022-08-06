@@ -5,6 +5,7 @@ from PIL import Image
 import os
 from django.conf import settings
 from django.template import Origin
+from django.utils.text import slugify
 
 # Create your models here.
 MAX_IMAGE_SIZE = 800
@@ -18,17 +19,27 @@ class Product(models.Model):
     description = models.TextField()
     # TODO: blank equals true only for testing. Remove it later
     image = models.ImageField(upload_to="products_img/%Y/%m", blank=True, null=True)
-    slug = models.SlugField(unique=True)
+    slug = models.SlugField(unique=True, blank=True, null=True)
     price_market = models.FloatField()
     price_promo = models.FloatField(default=0)
     prod_type = models.CharField(
         default="V",
         max_length=1,
         choices=(
-            ("V", "Variation"),
+            ("V", "Variable"),
             ("S", "Simple"),
         ),
     )
+
+    def format_price(self):
+        return f"R${self.price_market:.2f}".replace(".", ",")
+
+    format_price.short_description = "Price"
+
+    def format_promo_price(self):
+        return f"R${self.price_promo:.2f}".replace(".", ",")
+
+    format_promo_price.short_description = "Price (Promo)"
 
     def __str__(self) -> str:
         return self.name
@@ -45,6 +56,11 @@ class Product(models.Model):
             new_image.save(image_abs_path, optimize=True, quality=50)
 
     def save(self, *args, **kwargs):
+
+        if not self.slug:
+            slug = f"{slugify(self.name)}"
+            self.slug = slug
+
         super().save(*args, **kwargs)
         if self.image:
             self.resize_image(self.image, MAX_IMAGE_SIZE)
