@@ -2,13 +2,14 @@ from django.shortcuts import render
 from django.views.generic.list import ListView
 from django.views import View
 from django.http import HttpResponse
+from . import models
 
 
 class ListProducts(ListView):
     """List Product View"""
 
-    def get(self, *args, **kwargs):
-        return HttpResponse("ListProducts")
+    model = models.Product
+    template_name = "product/list.html"
 
 
 class ProductDetails(ListView):
