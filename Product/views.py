@@ -1,5 +1,6 @@
 from django.shortcuts import render
 from django.views.generic.list import ListView
+from django.views.generic.detail import DetailView
 from django.views import View
 from django.http import HttpResponse
 from . import models
@@ -10,15 +11,18 @@ class ListProducts(ListView):
 
     model = models.Product
     template_name = "product/list.html"
-    paginate_by = 10
+    paginate_by = 3
+    context_object_name = "products"
     # TODO: Change it after testing the pagination feature
 
 
-class ProductDetails(ListView):
+class ProductDetails(DetailView):
     """Product Details View"""
 
-    def get(self, *args, **kwargs):
-        return HttpResponse("ProductDetails")
+    model = models.Product
+    template_name = "product/detail.html"
+    context_object_name = "product"
+    slug_url_kwarg = "slug"
 
 
 class AddToCart(ListView):
